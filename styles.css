@@ -1,0 +1,163 @@
+/* ==========================================================================
+   Ficha de producto RORI — estilos propios
+   Se carga después de vendor/tailwind.generated.css.
+   ========================================================================== */
+
+/* Roboto variable alojada localmente (latin + latin-ext) */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('vendor/roboto-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('vendor/roboto-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --color-bg: #f5f7fa;
+  --color-card: #ffffff;
+  --color-border: #d6dfea;
+  --color-navy: #0f2942;
+  --color-muted: #5c6b7c;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: #0d1b2a;
+  font-family: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* Utilidades usadas en el HTML/JS que Tailwind v3 no genera
+   (shadow-xs / shadow-2xs / backdrop-blur-xs son nombres de Tailwind v4). */
+.shadow-xs { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+.shadow-2xs { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+.backdrop-blur-xs { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+.transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+.pointer-events-auto { pointer-events: auto; }
+
+/* Menú desplegable de importación/exportación (botón ⋯) */
+#data-menu-wrap { position: relative; }
+#btn-data-menu { min-width: 2.75rem; justify-content: center; }
+
+#data-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 40;
+  width: 15.5rem;
+  padding: 0.375rem;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  box-shadow: 0 12px 30px -12px rgb(15 41 66 / 0.28), 0 4px 10px -4px rgb(15 41 66 / 0.12);
+}
+#data-menu.hidden { display: none; }
+
+.data-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: #0d1b2a;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.data-menu-item:hover,
+.data-menu-item:focus-visible { background: #e8edf3; }
+.data-menu-item svg { width: 1rem; height: 1rem; flex-shrink: 0; color: var(--color-navy); }
+
+.data-menu-separator {
+  height: 1px;
+  background: #e8edf3;
+  margin: 0.375rem 0.25rem;
+}
+
+/* El botón «Ver catálogo» hace de selector: nombre activo + contador */
+#btn-grid-label {
+  display: inline-block;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+@media (max-width: 767px) { #btn-grid-label { max-width: 120px; } }
+@media (max-width: 480px) { #btn-grid-label { max-width: 96px; } }
+
+/* En pantallas estrechas la cabecera se apila: empujamos ⋯ a la derecha
+   para que el menú (anclado a right: 0) no se salga por el borde izquierdo. */
+@media (max-width: 767px) {
+  #data-menu-wrap { margin-left: auto; }
+}
+
+@media (max-width: 480px) {
+  #data-menu { width: min(15.5rem, calc(100vw - 2rem)); }
+}
+
+/* Transición entre modo edición y consulta */
+.layout-transition {
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dropzone-active {
+  outline: 2px dashed var(--color-navy);
+  outline-offset: -6px;
+  background-color: #d0dae6 !important;
+}
+
+/* Scrollbar discreta */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: #c2cedc; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #9fb1c6; }
+
+/* Foco visible para teclado: los campos usan focus:outline-none de Tailwind */
+:where(button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-navy);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+#preview-dropzone:focus-visible {
+  outline-offset: -6px;
+}
+
+/* El modal conserva el foco dentro mientras está abierto */
+#confirm-modal [role='dialog']:focus {
+  outline: none;
+}
+
+/* El badge de estado muestra el modo de almacenaje en el title del navegador */
+#status-badge { cursor: help; }
+
+/* El piloto «Guardado» se queda a la derecha aunque se oculte el encabezado */
+#mode-indicator { margin-left: auto; cursor: help; }
+
+/* Respeta la preferencia de movimiento reducido del sistema */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

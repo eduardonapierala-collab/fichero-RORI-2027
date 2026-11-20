@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Ficha técnica y catálogo local de prendas de hombre para analistas de tienda y asesores de venta RORI." />
+  <title>Ficha de producto — Catálogo RORI</title>
+
+  <!-- El logo local también sirve como favicon (evita el 404 de /favicon.ico) -->
+  <link rel="icon" href="logo_RORI.png" />
+
+  <!-- Recursos versionados localmente: la app funciona sin conexión -->
+  <link rel="stylesheet" href="vendor/tailwind.generated.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="min-h-screen antialiased selection:bg-[#0f2942] selection:text-white">
+
+  <!-- Notificaciones (aria-live se ajusta según éxito/error en app.js) -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none" role="status" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Modal de confirmación accesible -->
+  <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-[2px] p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-[#d6dfea]" role="dialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-message">
+      <h3 id="confirm-title" class="text-base font-semibold text-[#0d1b2a]">Confirmar acción</h3>
+      <p id="confirm-message" class="text-sm text-[#5c6b7c] mt-2 leading-relaxed"></p>
+      <div class="flex justify-end gap-2.5 mt-6">
+        <button id="confirm-cancel" type="button" class="px-4 py-2 text-sm font-medium rounded-xl border border-[#d6dfea] text-[#0d1b2a] hover:bg-[#f5f7fa] transition">Cancelar</button>
+        <button id="confirm-accept" type="button" class="px-4 py-2 text-sm font-medium rounded-xl bg-red-700 text-white hover:bg-red-800 transition">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-7 sm:py-10">
+
+    <!-- Encabezado -->
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div class="flex items-center gap-4">
+        <img src="logo_RORI.png" alt="Logo RORI" class="h-7 sm:h-8 w-auto object-contain shrink-0" />
+        <div class="border-l border-[#d6dfea] pl-4">
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-[#0d1b2a] leading-tight">Ficha de Producto</h1>
+          <p class="text-xs sm:text-sm text-[#5c6b7c] mt-0.5">Plantilla para Analistas y Asesores de venta</p>
+        </div>
+      </div>
+
+      <!-- Estado y acciones de datos (importar/exportar agrupadas en ⋯) -->
+      <div id="data-actions" class="flex items-center gap-2">
+        <span id="status-badge" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-[#d6dfea] text-[#5c6b7c] shadow-2xs">
+          <span id="status-dot" class="w-2 h-2 rounded-full bg-amber-500"></span>
+          <span id="status-text">Local · 0 guardados</span>
+        </span>
+
+        <div id="data-menu-wrap" class="relative">
+          <button id="btn-data-menu" type="button" aria-label="Opciones de datos: importar y exportar"
+            aria-haspopup="menu" aria-expanded="false" aria-controls="data-menu"
+            title="Importar y exportar datos"
+            class="inline-flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-[#d6dfea] text-[#0f2942] hover:bg-[#e8edf3] transition shadow-2xs cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <circle cx="5" cy="12" r="1.8" /><circle cx="12" cy="12" r="1.8" /><circle cx="19" cy="12" r="1.8" />
+            </svg>
+          </button>
+
+          <!-- El input de archivo vive fuera del menú para no perder el foco al abrirlo -->
+          <input id="input-import" type="file" accept=".json,.zip,.xlsx,.xls,.csv" class="hidden" />
+
+          <div id="data-menu" role="menu" aria-label="Opciones de datos" class="hidden">
+            <button id="btn-import" type="button" role="menuitem" title="Importar catálogo desde JSON, ZIP con fotos o Excel" class="data-menu-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 5 17 10" /><line x1="12" x2="12" y1="5" y2="17" />
+              </svg>
+              <span>Importar</span>
+            </button>
+
+            <div class="data-menu-separator" role="separator"></div>
+
+            <button id="btn-export-json" type="button" role="menuitem" title="Descargar base de datos JSON (sin fotos)" class="data-menu-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" />
+              </svg>
+              <span>Exportar JSON</span>
+            </button>
+
+            <button id="btn-export-zip" type="button" role="menuitem" title="Descargar JSON + carpeta de fotos en un ZIP" class="data-menu-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" />
+              </svg>
+              <span>JSON + fotos (.zip)</span>
+            </button>
+
+            <button id="btn-export-excel" type="button" role="menuitem" title="Descargar hoja de cálculo Excel (.xlsx)" class="data-menu-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><line x1="3" x2="21" y1="9" y2="9" /><line x1="3" x2="21" y1="15" y2="15" /><line x1="9" x2="9" y1="9" y2="21" />
+              </svg>
+              <span>Exportar Excel (.xlsx)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Barra del catálogo guardado -->
+    <section id="catalog-bar" class="hidden mb-6 bg-white/80 backdrop-blur-xs border border-[#d6dfea] rounded-2xl p-3 sm:px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3" aria-label="Catálogo guardado">
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0" id="saved-pills-container"></div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="btn-toggle-catalog-grid" type="button" aria-expanded="false"
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#f5f7fa] text-[#0f2942] border border-[#c6d2e0] hover:bg-[#e8edf3] transition cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="14" y="3" rx="1" /><rect width="7" height="7" x="14" y="14" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" />
+          </svg>
+          <span id="btn-grid-label">Ver catálogo</span>
+        </button>
+
+        <button id="btn-new-product-top" type="button"
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#0f2942] text-white hover:bg-[#091b2d] transition cursor-pointer shadow-xs">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" x2="12" y1="5" y2="19" /><line x1="5" x2="19" y1="12" y2="12" />
+          </svg>
+          Nuevo producto
+        </button>
+      </div>
+    </section>
+
+    <!-- Cuadrícula del catálogo -->
+    <section id="catalog-grid-view" class="hidden mb-8 bg-white rounded-2xl border border-[#d6dfea] shadow-sm p-5 sm:p-6" aria-label="Vista general del catálogo">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#e8edf3]">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#0d1b2a]">Catálogo guardado</h2>
+          <p id="catalog-grid-count" class="text-xs text-[#5c6b7c] mt-0.5">Selecciona una prenda para abrir su ficha técnica.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-72">
+          <div class="relative flex-1 min-w-[160px]">
+            <input id="catalog-search-input" type="search" placeholder="Buscar por nombre, ref o colección..." aria-label="Buscar en el catálogo"
+              class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-[#f8fafc] border border-[#d6dfea] text-xs text-[#0d1b2a] placeholder-[#8c9bae] focus:outline-none focus:bg-white focus:border-[#0f2942] transition" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#5c6b7c] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+            </svg>
+          </div>
+          <select id="catalog-sort" aria-label="Ordenar catálogo"
+            class="px-2.5 py-2 rounded-xl bg-[#f8fafc] border border-[#d6dfea] text-xs text-[#0d1b2a] focus:outline-none focus:bg-white focus:border-[#0f2942] transition cursor-pointer">
+            <option value="recientes">Más recientes</option>
+            <option value="antiguos">Más antiguos</option>
+            <option value="nombre">Nombre A–Z</option>
+            <option value="referencia">Referencia</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="catalog-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5"></div>
+
+      <div id="catalog-empty-search" class="hidden py-10 text-center text-xs text-[#5c6b7c]">
+        No se encontraron prendas que coincidan con la búsqueda.
+      </div>
+    </section>
+
+    <!-- Espacio de trabajo -->
+    <main id="workspace-grid" class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start layout-transition">
+
+      <!-- Vista previa / ficha final -->
+      <section id="preview-column" class="lg:col-span-5 flex flex-col layout-transition">
+        <div class="flex items-center justify-between mb-3">
+          <div id="preview-heading-block">
+            <h2 id="preview-heading" class="text-sm font-bold text-[#0d1b2a]">Vista previa de la ficha</h2>
+            <p id="preview-subheading" class="text-xs text-[#5c6b7c]">Se actualiza mientras completas el formulario.</p>
+          </div>
+          <span id="mode-indicator" class="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-[#e8edf3] text-[#0f2942]">En edición</span>
+        </div>
+
+        <article class="bg-white rounded-2xl border border-[#d6dfea] shadow-sm overflow-hidden">
+          <div id="preview-dropzone" tabindex="0" role="button" aria-label="Adjuntar foto del producto. También puedes arrastrar una imagen aquí"
+            class="relative w-full aspect-[4/3.6] bg-[#dce3ec] flex flex-col items-center justify-center text-center p-6 overflow-hidden transition-colors cursor-pointer group"
+            title="Haz clic, pulsa Enter o arrastra una imagen aquí">
+            <span id="preview-coleccion-badge" class="absolute top-3.5 right-3.5 z-10 px-3 py-1 rounded-full bg-white/95 text-[#0d1b2a] text-[11px] font-bold tracking-wider uppercase shadow-xs">SIN COLECCIÓN</span>
+            <div id="preview-empty-image" class="flex flex-col items-center justify-center pointer-events-none select-none">
+              <div class="w-11 h-11 rounded-xl border border-[#7d8fa4]/40 flex items-center justify-center text-[#4a5d73] mb-2.5 group-hover:scale-105 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                </svg>
+              </div>
+              <p class="text-xs font-semibold text-[#2d3e52]">Foto del producto</p>
+              <p class="text-[11px] text-[#5c6b7c] mt-0.5">JPG, PNG o WEBP · máx. 5 MB</p>
+            </div>
+            <img id="preview-image" src="" alt="Vista previa de la prenda" class="hidden absolute inset-0 w-full h-full object-cover" />
+          </div>
+
+          <div class="p-6">
+            <h3 id="preview-nombre" class="text-lg sm:text-xl font-bold text-[#0d1b2a] leading-snug">Nombre del producto</h3>
+
+            <div class="flex flex-wrap gap-2 mt-3 pb-4 border-b border-[#e8edf3]">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-[#e9eff6] text-[11px] text-[#35485e]">
+                <span class="font-medium text-[#5c6b7c] mr-1">Ocasión:</span><span id="preview-ocasion" class="font-semibold text-[#0d1b2a]">—</span>
+              </span>
+              <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-[#e9eff6] text-[11px] text-[#35485e]">
+                <span class="font-medium text-[#5c6b7c] mr-1">Silueta:</span><span id="preview-silueta" class="font-semibold text-[#0d1b2a]">—</span>
+              </span>
+            </div>
+
+            <dl class="divide-y divide-[#e8edf3] text-xs">
+              <div class="py-3 grid grid-cols-12 gap-2 items-baseline">
+                <dt class="col-span-4 text-[11px] font-bold tracking-wider uppercase text-[#5c6b7c]">Referencia</dt>
+                <dd id="preview-referencia" class="col-span-8 font-mono text-[11px] font-semibold text-[#0d1b2a]">—</dd>
+              </div>
+              <div class="py-3 grid grid-cols-12 gap-2 items-baseline">
+                <dt class="col-span-4 text-[11px] font-bold tracking-wider uppercase text-[#5c6b7c]">Composición</dt>
+                <dd id="preview-composicion" class="col-span-8 text-[#0d1b2a] leading-relaxed">—</dd>
+              </div>
+              <div class="py-3 grid grid-cols-12 gap-2 items-baseline">
+                <dt class="col-span-4 text-[11px] font-bold tracking-wider uppercase text-[#5c6b7c]">Inspiración</dt>
+                <dd id="preview-inspiracion" class="col-span-8 text-[#0d1b2a] leading-relaxed">—</dd>
+              </div>
+              <div class="pt-3 grid grid-cols-12 gap-2 items-baseline">
+                <dt class="col-span-4 text-[11px] font-bold tracking-wider uppercase text-[#5c6b7c] leading-tight">Cuidado del producto</dt>
+                <dd id="preview-cuidado" class="col-span-8 text-[#0d1b2a] leading-relaxed">—</dd>
+              </div>
+            </dl>
+
+            <div id="view-mode-actions" class="hidden mt-6 pt-4 border-t border-[#e8edf3] flex flex-wrap items-center justify-between gap-2.5">
+              <button id="btn-new-product-card" type="button"
+                class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold bg-[#0f2942] text-white hover:bg-[#091b2d] transition cursor-pointer shadow-xs">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="12" x2="12" y1="5" y2="19" /><line x1="5" x2="19" y1="12" y2="12" />
+                </svg>
+                + Nuevo producto
+              </button>
+              <div class="flex items-center gap-2">
+                <button id="btn-edit-card" type="button"
+                  class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-medium bg-[#f5f7fa] border border-[#d6dfea] text-[#0d1b2a] hover:bg-[#e8edf3] transition cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-[#0f2942]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                  </svg>
+                  Editar ficha
+                </button>
+                <button id="btn-delete-card" type="button"
+                  class="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium bg-white border border-red-200 text-red-700 hover:bg-red-50 transition cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                  </svg>
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <aside id="editor-tip-box" class="mt-4 bg-[#e9eff6]/80 border border-[#d6dfea] rounded-2xl p-3.5 flex items-start gap-3 text-xs text-[#4a5d73]">
+          <span class="font-bold text-[#0f2942] shrink-0">Consejo</span>
+          <p class="leading-relaxed">Arrastra una imagen hasta la ficha o usa «Adjuntar foto». En el celular puedes tomarla directamente con la cámara.</p>
+        </aside>
+      </section>
+
+      <!-- Formulario -->
+      <section id="form-column" class="lg:col-span-7 bg-white rounded-2xl border border-[#d6dfea] shadow-sm p-6 sm:p-8 layout-transition">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[#e8edf3]">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-[#0d1b2a]">Datos del producto</h2>
+            <p class="text-xs text-[#5c6b7c] mt-0.5">Los campos con * son obligatorios.</p>
+          </div>
+          <button id="btn-fill-sample" type="button"
+            class="self-start sm:self-auto text-[11px] font-medium px-3 py-1.5 rounded-lg bg-[#f5f7fa] hover:bg-[#e8edf3] text-[#0f2942] border border-[#d6dfea] transition cursor-pointer">
+            Cargar ejemplo masculino
+          </button>
+        </div>
+
+        <form id="product-form" class="mt-5 space-y-4" novalidate>
+          <div>
+            <label for="input-foto" class="block text-xs font-semibold text-[#0d1b2a] mb-2">Foto del producto <span class="text-[#0f2942]">*</span></label>
+            <div class="flex flex-wrap items-center gap-3">
+              <input id="input-foto" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" />
+              <button id="btn-attach-photo" type="button"
+                class="px-4 py-2 rounded-xl border border-[#c6d2e0] bg-white hover:bg-[#f5f7fa] text-xs font-medium text-[#0d1b2a] transition cursor-pointer shadow-2xs">
+                Adjuntar foto
+              </button>
+              <span id="file-name-label" class="text-xs text-[#5c6b7c] truncate max-w-[240px]">Ningún archivo seleccionado.</span>
+            </div>
+            <p id="error-foto" class="hidden text-[11px] text-red-600 mt-1" aria-live="polite">Debes adjuntar una fotografía del producto.</p>
+          </div>
+
+          <div>
+            <label for="input-producto" class="block text-xs font-semibold text-[#0d1b2a] mb-1.5">Producto <span class="text-[#0f2942]">*</span></label>
+            <input id="input-producto" type="text" required placeholder="Ej. Camisa casual de lino" aria-describedby="error-producto"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d6dfea] text-xs sm:text-sm text-[#0d1b2a] placeholder-[#8c9bae] focus:outline-none focus:bg-white focus:border-[#0f2942] transition" />
+            <p id="error-producto" class="hidden text-[11px] text-red-600 mt-1" aria-live="polite">Ingresa el nombre de la prenda.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="input-coleccion" class="block text-xs font-semibold text-[#0d1b2a] mb-1.5">Colección <span class="text-[#0f2942]">*</span></label>
+              <input id="input-coleccion" type="text" required list="suggest-colecciones" placeholder="Ej. Primavera 2026" aria-describedby="error-coleccion"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d6dfea] text-xs sm:text-sm text-[#0d1b2a] placeholder-[#8c9bae] focus:outline-none focus:bg-white focus:border-[#0f2942] transition" />
+              <datalist id="suggest-colecciones">
+                <option value="Colección RORI 2026"></option><option value="Primavera 2026"></option><option value="Verano 2026"></option>
+                <option value="Otoño 2026"></option><option value="Invierno 2026"></option>
+              </datalist>
+              <p id="error-coleccion" class="hidden text-[11px] text-red-600 mt-1" aria-live="polite">Indica la colección o temporada.</p>
+            </div>
+
+            <div>
+              <label for="input-ocasion" class="block text-xs font-semibold text-[#0d1b2a] mb-1.5">Ocasión</label>
+              <input id="input-ocasion" type="text" list="suggest-ocasiones" placeholder="Ej. Casual, oficina, fin de semana"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d6dfea] text-xs sm:text-sm text-[#0d1b2a] placeholder-[#8c9bae] focus:outline-none focus:bg-white focus:border-[#0f2942] transition" />
+              <datalist id="suggest-ocasiones">
+                <option value="Casual"></option><option value="Oficina"></option><option value="Fin de semana"></option>
+                <option value="Formal"></option><option value="Deportivo"></option><option value="Entretiempo"></option>
+              </datalist>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="input-silueta" class="block text-xs font-semibold text-[#0d1b2a] mb-1.5">Silueta</label>
+              <input id="input-silueta" type="text" list="suggest-siluetas" placeholder="Ej. Regular fit, corte recto"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d6dfea] text-xs sm:text-sm text-[#0d1b2a] placeholder-[#8c9bae] focus:outline-none focus:bg-white focus:border-[#0f2942] transition" />
+              <datalist id="suggest-siluetas">
+                <option value="Regular fit"></option><option value="Slim fit"></option><option value="Relaxed fit"></option><option value="Oversize"></option>
+              </datalist>
+            </div>
+
+            <div>
+              <label for="input-referencia" class="block text-xs font-semibold text-[#0d1b2a] mb-1.5">Referencia</label>
+              <input id="input-referencia" type="text" placeholder="Ej. HOM-024" aria-describedby="error-referencia hint-referencia"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d6dfea] text-xs sm:text-sm text-[#0d1b2a] placeholder-[#8c9bae] uppercase focus:outline-none focus:bg-white focus:border-[#0f2942] transition" />
+              <p id="hint-referencia" class="text-[11px] text-[#5c6b7c] mt-1">Si la dejas vacía se genera automáticamente. Letras, números y guiones.</p>
+              <p id="error-referencia" class="hidden text-[11px] text-red-600 mt-1" aria-live="polite">Formato no válido o referencia duplicada.</p>
+            </div>
+          </div>
+
+          <div>
+            <label for="input-composicion" class="block text-xs font-semibold text-[#0d1b2a] mb-1.5">Composición</label>
+            <textarea id="input-composicion" rows="2" placeholder="Ej. 100% lino lavado de trama abierta"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d6dfea] text-xs sm:text-sm text-[#0d1b2a] placeholder-[#8c9bae] focus:outline-none focus:bg-white focus:border-[#0f2942] transition resize-y"></textarea>
+          </div>
+
+          <div>
+            <label for="input-inspiracion" class="block text-xs font-semibold text-[#0d1b2a] mb-1.5">Inspiración</label>
+            <textarea id="input-inspiracion" rows="2" placeholder="Ej. Sastrería relajada, tonos marino, costa mediterránea"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d6dfea] text-xs sm:text-sm text-[#0d1b2a] placeholder-[#8c9bae] focus:outline-none focus:bg-white focus:border-[#0f2942] transition resize-y"></textarea>
+          </div>
+
+          <div>
+            <label for="input-cuidado" class="block text-xs font-semibold text-[#0d1b2a] mb-1.5">Cuidado del producto</label>
+            <textarea id="input-cuidado" rows="2" placeholder="Ej. Lavado a máquina 30 °C ciclo suave, no usar secadora"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d6dfea] text-xs sm:text-sm text-[#0d1b2a] placeholder-[#8c9bae] focus:outline-none focus:bg-white focus:border-[#0f2942] transition resize-y"></textarea>
+          </div>
+
+          <div class="pt-4 border-t border-[#e8edf3] flex flex-wrap items-center gap-3">
+            <button id="btn-save-product" type="submit"
+              class="px-5 py-2.5 rounded-xl bg-[#0f2942] hover:bg-[#091b2d] text-white text-xs sm:text-sm font-semibold transition shadow-xs cursor-pointer">
+              Guardar producto
+            </button>
+            <button id="btn-clear-form" type="button"
+              class="px-4 py-2.5 rounded-xl bg-white hover:bg-[#f5f7fa] border border-[#c6d2e0] text-[#0d1b2a] text-xs sm:text-sm font-medium transition cursor-pointer">
+              Limpiar
+            </button>
+            <button id="btn-cancel-edit" type="button"
+              class="hidden ml-auto px-3.5 py-2.5 rounded-xl text-xs font-medium text-[#5c6b7c] hover:text-[#0d1b2a] transition cursor-pointer">
+              Cancelar edición
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="vendor/xlsx.full.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

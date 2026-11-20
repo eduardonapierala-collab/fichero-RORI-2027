@@ -1,0 +1,41 @@
+[
+  {
+    "id": "prd_1795188426700_w7cg9",
+    "referencia": "SAC-84210",
+    "producto": "Smart Casual Blazer",
+    "coleccion": "Colección RORI 2026",
+    "ocasion": "Semi-Formal / Business Casual",
+    "silueta": "Tailored Fit (Entallado estructurado)",
+    "composicion": "70 % lana, 30 % poliéster: Tejido tipo tweed o franela texturizada que aporta estructura, calidez moderada y alta resistencia a las arrugas, ideal para jornadas ejecutivas o eventos de media estación[cite: 1].",
+    "inspiracion": "Elegancia atemporal: Combínalo con camisa blanca de vestir sin corbata, pantalón chino azul marino o gris oscuro y cinturón de cuero marrón para un acabado pulcro[cite: 1].",
+    "cuidado": "Limpieza en seco profesional únicamente. \\nGuardar en percha anatómica ancha y vaporizar suavemente para eliminar pliegues sin dañar la textura de la lana.",
+    "archivo_imagen": "imagenes/sac-84210.webp",
+    "fecha_registro": "2026-11-20T15:27:06.701Z"
+  },
+  {
+    "id": "prd_1795186554915_79e9b",
+    "referencia": "HOM-67543",
+    "producto": "Sporty Casual Style",
+    "coleccion": "Colección RORI 2026",
+    "ocasion": "Casual",
+    "silueta": "Comfort-focused outfits",
+    "composicion": "100 % algodón: Transpirable, cómodo y versátil; ideal para climas cálidos o uso diario. En versiones de franela o cepilladas aporta abrigo y suavidad.",
+    "inspiracion": "Clásico moderno: Camisa de cuadros en tonos sobrios con pantalones beige o azul marino.",
+    "cuidado": "Lavar a máquina en ciclo delicado con agua fría (máx. 30 °C) y con colores similares. \\nSecar colgado a la sombra. No usar secadora (evita que la tela encoja)",
+    "archivo_imagen": "imagenes/hom-67543.webp",
+    "fecha_registro": "2026-11-20T14:55:54.915Z"
+  },
+  {
+    "id": "prd_1795173949661",
+    "referencia": "STR-HOM-3375011",
+    "producto": "Jeans de mezclilla casuales",
+    "coleccion": "\"New Collection\" ILVENTO",
+    "ocasion": "Casual",
+    "silueta": "Regular",
+    "composicion": "Algodón (100 % o base principal): Aporta resistencia, transpirabilidad y estructura. tejido con hilos de urdimbre teñidos de (azul índigo",
+    "inspiracion": "jean moderno que se aleja del corte recto tradicional para enfocarse en la ingeniería del patronaje, la arquitectura de las costuras y la ergonomía, transformando una prenda utilitaria en una pieza escultural y funcional.",
+    "cuidado": "Para mantener la forma, el color y la elasticidad de un jean moderno por más tiempo, lo ideal es lavarlo con poca frecuencia, siempre al revés, con agua fría y secarlo al aire libre a la sombra",
+    "archivo_imagen": "imagenes/str-hom-3375011.webp",
+    "fecha_registro": "2026-11-20T11:25:49.661Z"
+  }
+]
